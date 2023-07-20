@@ -1,52 +1,58 @@
-package triplesum;
-import java.util.Arrays;
-import java.util.Scanner;
+package looping;
+
+import java.io.*;
+import java.util.*;
 
 public class Solution {
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
+  private static InputReader in;
+  private static PrintWriter out;
 
-		int lena = sc.nextInt();
-		int lenb = sc.nextInt();
-		int lenc = sc.nextInt();
-		int[] a = readArray(sc, lena);
-		int[] b = readArray(sc, lenb);
-		int[] c = readArray(sc, lenc);
+  public static void main(String[] args) throws IOException {
+    in = new InputReader(System.in);
+    out = new PrintWriter(System.out, true);
 
-		System.out.println(solve(a, b, c));
+    int n = in.nextInt();
+    int[] arr = new int[n];
+    for (int i = 0; i < n; i++) {
+      arr[i] = in.nextInt();
+    }
+    int[] dp = new int[n];
+    for (int i = 1; i < n; i++) {
+      if (arr[i] == 1) dp[i] = 1 << 29;
+      dp[i] = 1 << 29;
+      if (i >= 1 && arr[i-1] == 0) dp[i] = Math.min(dp[i], dp[i-1]+1);
+      if (i >= 2 && arr[i-2] == 0) dp[i] = Math.min(dp[i], dp[i-2]+1);
+    }
+    out.println(dp[n-1]);
+    
+    out.close();
+    System.exit(0);
+  }
 
-		sc.close();
-	}
+  static class InputReader {
+    public BufferedReader reader;
+    public StringTokenizer tokenizer;
 
-	static int[] readArray(Scanner sc, int size) {
-		int[] result = new int[size];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = sc.nextInt();
-		}
-		return result;
-	}
+    public InputReader(InputStream stream) {
+      reader = new BufferedReader(new InputStreamReader(stream), 32768);
+      tokenizer = null;
+    }
 
-	static long solve(int[] a, int[] b, int[] c) {
-		int[] sortedSetA = buildSortedSet(a);
-		int[] sortedSetB = buildSortedSet(b);
-		int[] sortedSetC = buildSortedSet(c);
+    public String next() {
+      while (tokenizer == null || !tokenizer.hasMoreTokens()) {
+        try {
+          tokenizer = new StringTokenizer(reader.readLine());
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      }
+      return tokenizer.nextToken();
+    }
 
-		long result = 0;
-		for (int numberB : sortedSetB) {
-			result += (long) findBeforeCount(sortedSetA, numberB) * findBeforeCount(sortedSetC, numberB);
-		}
-		return result;
-	}
+    public int nextInt() {
+      return Integer.parseInt(next());
+    }
+  }
 
-	static int findBeforeCount(int[] x, int number) {
-		int index = Arrays.binarySearch(x, number);
-		if (index < 0) {
-			index = -1 - index - 1;
-		}
-		return index + 1;
-	}
 
-	static int[] buildSortedSet(int[] x) {
-		return Arrays.stream(x).distinct().sorted().toArray();
-	}
 }
